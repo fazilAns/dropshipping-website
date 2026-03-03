@@ -6,8 +6,9 @@ import Category from '@/models/Category';
 import Subcategory from '@/models/Subcategory';
 
 // PUT: Update category
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const session = await getServerSession(authOptions);
         if (!session || session.user.role !== 'admin') {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -17,7 +18,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         await dbConnect();
 
         const category = await Category.findByIdAndUpdate(
-            params.id,
+            id,
             { name, slug, description },
             { new: true, runValidators: true }
         );
@@ -33,8 +34,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 // DELETE: Remove category
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const session = await getServerSession(authOptions);
         if (!session || session.user.role !== 'admin') {
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -43,12 +45,12 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         await dbConnect();
 
         // check if subcategories exist
-        const subCount = await Subcategory.countDocuments({ category: params.id });
+        const subCount = await Subcategory.countDocuments({ category: id });
         if (subCount > 0) {
             return NextResponse.json({ message: 'Cannot delete category with existing subcategories' }, { status: 400 });
         }
 
-        const category = await Category.findByIdAndDelete(params.id);
+        const category = await Category.findByIdAndDelete(id);
         if (!category) {
             return NextResponse.json({ message: 'Category not found' }, { status: 404 });
         }
