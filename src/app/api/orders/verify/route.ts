@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Order from '@/models/Order';
 import crypto from 'crypto';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         const session = (await getServerSession(authOptions)) as any;
         if (!session) {

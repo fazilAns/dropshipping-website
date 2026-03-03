@@ -1,11 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth';
 import dbConnect from '@/lib/db';
 import User from '@/models/User';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 
 // GET: Check if an admin user already exists
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         await dbConnect();
         const adminCount = await User.countDocuments({ role: 'admin' });
@@ -20,7 +21,7 @@ export async function GET() {
 }
 
 // POST: One-time admin promotion
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         await dbConnect();
 
