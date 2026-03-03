@@ -125,7 +125,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
                 ...formData,
                 price: Number(formData.price),
                 discountPrice: formData.discountPrice ? Number(formData.discountPrice) : undefined,
-                tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
+                tags: formData.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag !== ''),
             };
 
             const res = await fetch(url, {
